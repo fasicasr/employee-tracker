@@ -12,7 +12,7 @@ const connection = mysql.createConnection({
 
   // Be sure to update with your own MySQL password!
   password: '',
-  database: 'employeeDB;',
+  database: 'employeeDB',
 });
 
 connection.connect((err) => {
@@ -27,33 +27,43 @@ const runSearch = () => {
       type: 'rawlist',
       message: 'What would you like to do?',
       choices: [
-        'Find songs by artist',
-        'Find all artists who appear more than once',
-        'Find data within a specific range',
-        'Search for a specific song',
-        'Find artists with a top song and top album in the same year',
+        'Add department',
+        'Add roles',
+        'Add employees',
+        'View department',
+        'View roles',
+        'View employees',
+        'Update employee role',
       ],
     })
     .then((answer) => {
       switch (answer.action) {
-        case 'Find songs by artist':
-          artistSearch();
+        case 'Add department':
+          addDepartment();
           break;
 
-        case 'Find all artists who appear more than once':
-          multiSearch();
+        case 'Add roles':
+          addRole();
           break;
 
-        case 'Find data within a specific range':
-          rangeSearch();
+        case 'Add employees':
+          addEmployees();
           break;
 
-        case 'Search for a specific song':
-          songSearch();
+        case 'View department':
+          viewDepartment();
           break;
 
-        case 'Find artists with a top song and top album in the same year':
-          songAndAlbumSearch();
+        case 'View roles':
+          viewRoles();
+          break;
+
+        case 'View employees':
+          viewEmployees();
+          break;
+
+        case 'Update employee role':
+          updateRole();
           break;
 
         default:
@@ -63,12 +73,12 @@ const runSearch = () => {
     });
 };
 
-const artistSearch = () => {
+const addDepartment = () => {
   inquirer
     .prompt({
-      name: 'artist',
+      name: 'department',
       type: 'input',
-      message: 'What artist would you like to search for?',
+      message: 'What department would you like to add?',
     })
     .then((answer) => {
       const query = 'SELECT position, song, year FROM top5000 WHERE ?';
@@ -83,13 +93,13 @@ const artistSearch = () => {
     });
 };
 
-const multiSearch = () => {
+const viewDepartment = () => {
   const query =
-    'SELECT artist FROM top5000 GROUP BY artist HAVING count(*) > 1';
+    'SELECT name FROM department';
   connection.query(query, (err, res) => {
-    res.forEach(({ artist }) => console.log(artist));
-    runSearch();
+    res.forEach(({ name }) => console.log(name));
   });
+  runSearch();
 };
 
 const rangeSearch = () => {
