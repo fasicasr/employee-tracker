@@ -163,9 +163,18 @@ const addEmployee = () => {
     ])
     .then((answer) => {
       connection.query(
-        'INSERT INTO employees SET ?',
-        { first_name: answer.firstName, last_name: answer.lastName, role_id: answer.roleId, manager_id: answer.managerId }
-    )});
+          'INSERT INTO employees SET ?',
+          { first_name: answer.firstName, 
+            last_name: answer.lastName, 
+      
+          },
+          (err, res) => {
+            if (err) throw err;
+          console.log(err)
+      
+         runSearch();
+      }); 
+    });
 };
 
 
@@ -190,9 +199,9 @@ const viewRoles = () => {
 
 const viewEmployees = () => {
   const query =
-    'SELECT name FROM employees';
+    'SELECT id, first_name, last_name, role_id, manager_id FROM employees';
   connection.query(query, (err, res) => {
-    res.forEach(({ id, name }) => console.log(id + ' ' + name ));
+    res.forEach(({ id, first_name, last_name, role_id, manager_id }) => console.log(id + ' ' +first_name+ ' ' +last_name+ ' ' +role_id+ '' +manager_id));
   });
   runSearch();
 };
