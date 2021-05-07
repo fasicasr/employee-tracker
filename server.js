@@ -21,7 +21,7 @@ const runSearch = () => {
   inquirer
     .prompt({
       name: 'action',
-      type: 'rawlist',
+      type: 'list',
       message: 'Please choose from the items below',
       choices: [
         'Add department',
@@ -98,9 +98,14 @@ const addDepartment = () => {
 
 
 
+
 const addRole = () => {
-  
-  inquirer
+    const query =
+    'SELECT id, name FROM departments';
+  connection.query(query, (err, res) => {
+    res.forEach(({ id, name }) => console.log(id + ' ' + name ));
+ 
+    inquirer
     .prompt([
       {
         name: 'roleTitle',
@@ -132,6 +137,12 @@ const addRole = () => {
        runSearch();
       });
     });
+  });
+  // })
+  // .catch(err => {
+  //   console.error(err)
+  // })
+  
 };
 
 
