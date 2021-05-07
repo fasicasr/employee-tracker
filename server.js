@@ -4,13 +4,10 @@ const inquirer = require('inquirer');
 const connection = mysql.createConnection({
   host: 'localhost',
 
-  // Your port; if not 3306
   port: 3306,
 
-  // Your username
   user: 'root',
 
-  // Be sure to update with your own MySQL password!
   password: '',
   database: 'employeeDB',
 });
@@ -25,12 +22,12 @@ const runSearch = () => {
     .prompt({
       name: 'action',
       type: 'rawlist',
-      message: 'What would you like to do?',
+      message: 'Please choose from the items below',
       choices: [
         'Add department',
         'Add roles',
         'Add employees',
-        'View departments',
+        'View department',
         'View roles',
         'View employees',
         'Update employee role',
@@ -78,16 +75,24 @@ const addDepartment = () => {
     .prompt({
       name: 'departmentName',
       type: 'input',
-      message: 'What department would you like to add?',
+      message: 'What is the name of the department you would like to add?',
     })
     .then((answer) => {
-      const query = 'INSERT INTO department (name) VALUE (?)';
-      connection.query(query, { departmentName: answer.departmentName }, (err, res) => {
-        // connection.query(query, (err, res) => {
-        //   res.forEach(({ departmentName }) => console.log(departmentName));
-        // });
+      const query = connection.query(
+        'INSERT INTO department SET ?',
+          {
+            name: answer.departmentName,
+
+          },
+           (err, res) => {
+            if (err) throw err;
+          console.log(answer.departmentName)
+          console.log(err)
+      
         runSearch();
       });
+
+      
     });
 };
 
@@ -103,7 +108,7 @@ const addRole = () => {
         message: 'What is the title of the role?',
       },
       {
-        name: 'salary',
+        name: 'roleSalary',
         type: 'input',
         message: 'What is the salary amount for this role?',
       },
@@ -111,19 +116,13 @@ const addRole = () => {
         name: 'departmentId',
         type: 'input',
         message: 'What is the department ID for this role?',
-        validate(value) {
-          if (isNaN(value) === false) {
-            return true;
-          }
-          return false;
-        },
+        
       },
     ])
     .then((answer) => {
-      // when finished prompting, insert a new item into the db with that info
-      connection.query(
-        'INSERT INTO auctions SET ?',
-
+      const query = connection.query(
+        'INSERT INTO role SET ?',
+        { title: answer.roleTitle, salary: answer.roleSalary}
     )});
 };
 
@@ -134,17 +133,17 @@ const addEmployee = () => {
   inquirer
     .prompt([
       {
-        name: 'employeeFirstName',
+        name: 'firstName',
         type: 'input',
         message: 'What is the employees first name?',
       },
       {
-        name: 'employeeLastName',
+        name: 'lastName',
         type: 'input',
         message: 'What is the employees last name?',
       },
       {
-        name: 'employeeRoleId',
+        name: 'roleId',
         type: 'input',
         message: 'What is the department ID for this role?',
       },
@@ -155,18 +154,17 @@ const addEmployee = () => {
       },
     ])
     .then((answer) => {
-      // when finished prompting, insert a new item into the db with that info
       connection.query(
-        'INSERT INTO auctions SET ?',
-
+        'INSERT INTO employee SET ?',
+        { first_name: answer.firstName, last_name: answer.lastName, role_id: answer.roleId, manager_id: answer.managerId }
     )});
 };
 
 const viewDepartment = () => {
   const query =
-    'SELECT name FROM department';
+    'SELECT id, name FROM department';
   connection.query(query, (err, res) => {
-    res.forEach(({ name }) => console.log(name));
+    res.forEach(({ id, name }) => console.log(id + ' ' + name ));
   });
   runSearch();
 };
@@ -184,7 +182,7 @@ const viewEmployees = () => {
   const query =
     'SELECT name FROM employee';
   connection.query(query, (err, res) => {
-    res.forEach(({ name }) => console.log(name));
+    res.forEach(({ id, name }) => console.log(id + ' ' + name ));
   });
   runSearch();
 };
