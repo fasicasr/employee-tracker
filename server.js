@@ -25,9 +25,9 @@ const runSearch = () => {
       message: 'Please choose from the items below',
       choices: [
         'Add department',
-        'Add roles',
-        'Add employees',
-        'View department',
+        'Add role',
+        'Add employee',
+        'View departments',
         'View roles',
         'View employees',
         'Update employee role',
@@ -39,7 +39,7 @@ const runSearch = () => {
           addDepartment();
           break;
 
-        case 'Add roles':
+        case 'Add role':
           addRole();
           break;
 
@@ -47,8 +47,8 @@ const runSearch = () => {
           addEmployee();
           break;
 
-        case 'View department':
-          viewDepartment();
+        case 'View departments':
+          viewDepartments();
           break;
 
         case 'View roles':
@@ -79,7 +79,7 @@ const addDepartment = () => {
     })
     .then((answer) => {
       const query = connection.query(
-        'INSERT INTO department SET ?',
+        'INSERT INTO departments SET ?',
           {
             name: answer.departmentName,
 
@@ -121,9 +121,17 @@ const addRole = () => {
     ])
     .then((answer) => {
       const query = connection.query(
-        'INSERT INTO role SET ?',
-        { title: answer.roleTitle, salary: answer.roleSalary}
-    )});
+        'INSERT INTO roles SET ?',
+        { title: answer.roleTitle, 
+          salary: answer.roleSalary
+        },
+        (err, res) => {
+          if (err) throw err;
+        console.log(err)
+    
+       runSearch();
+      });
+    });
 };
 
 
@@ -155,14 +163,16 @@ const addEmployee = () => {
     ])
     .then((answer) => {
       connection.query(
-        'INSERT INTO employee SET ?',
+        'INSERT INTO employees SET ?',
         { first_name: answer.firstName, last_name: answer.lastName, role_id: answer.roleId, manager_id: answer.managerId }
     )});
 };
 
-const viewDepartment = () => {
+
+
+const viewDepartments = () => {
   const query =
-    'SELECT id, name FROM department';
+    'SELECT id, name FROM departments';
   connection.query(query, (err, res) => {
     res.forEach(({ id, name }) => console.log(id + ' ' + name ));
   });
@@ -171,16 +181,16 @@ const viewDepartment = () => {
 
 const viewRoles = () => {
   const query =
-    'SELECT name FROM roles';
+    'SELECT id, title, salary FROM roles';
   connection.query(query, (err, res) => {
-    res.forEach(({ name }) => console.log(name));
+    res.forEach(({ id, title, salary }) => console.log(id + ' ' + title+ ' ' + salary));
   });
   runSearch();
 };
 
 const viewEmployees = () => {
   const query =
-    'SELECT name FROM employee';
+    'SELECT name FROM employees';
   connection.query(query, (err, res) => {
     res.forEach(({ id, name }) => console.log(id + ' ' + name ));
   });
@@ -189,7 +199,7 @@ const viewEmployees = () => {
 
 const updateRole = () => {
   const query =
-    'SELECT name FROM role';
+    'SELECT name FROM roles';
   connection.query(query, (err, res) => {
     res.forEach(({ name }) => console.log(name));
   });
