@@ -219,14 +219,15 @@ const viewRoles = () => {
 const viewEmployees = () => {
   //need to display id, first, last, title, department, salary, manager
   const query =
-    `SELECT e.id, e.first_name, e.last_name, r.title, d.name as department, r.salary, m.first_name as manager FROM employees e 
-  inner JOIN roles r ON e.role_id = r.id
-  inner JOIN departments d ON r.department_id = d.id
-  left JOIN employees m ON e.manager_id = m.id;`
+    `SELECT e.id, e.first_name, e.last_name, r.title, d.name as department, r.salary, m.first_name as manager 
+      FROM employees e  
+      inner JOIN roles r ON e.role_id = r.id
+      inner JOIN departments d ON r.department_id = d.id
+      left JOIN employees m ON e.manager_id = m.id;`
   //TODO: add manger_id (m.first_name + m.last_name) as manager
   connection.query(query, (err, res) => {
     let values = [];
-    res.forEach(({ id, first_name, last_name, title, department, salary  }) => values.push([id, first_name, last_name, title, department, salary]));
+    res.forEach(({ id, first_name, last_name, title, department, salary, manager  }) => values.push([id, first_name, last_name, title, department, salary, manager]));
     // var values = [
     //   [1, 'sally', 'huey', 'Sales Manger'],
     //   [2, 'sally', 'huey', 'Sales Manger']
