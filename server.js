@@ -1,19 +1,22 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+//require('console.table');
+const cTable = require("console.table");
 
 const connection = mysql.createConnection({
   host: 'localhost',
 
   port: 3306,
-
+  //username
   user: 'root',
-
+  //passoword
   password: '',
   database: 'employeeDB',
 });
 
 connection.connect((err) => {
   if (err) throw err;
+  //viewEmployees()
   runSearch();
 });
 
@@ -24,12 +27,12 @@ const runSearch = () => {
       type: 'list',
       message: 'Please choose from the items below',
       choices: [
-        'Add department',
-        'Add role',
-        'Add employee',
-        'View departments',
-        'View roles',
         'View employees',
+        'Add employee',
+        'View roles',
+        'Add role',
+        'Add department',
+        'View departments',
         'Update employee role',
       ],
     })
@@ -80,19 +83,19 @@ const addDepartment = () => {
     .then((answer) => {
       const query = connection.query(
         'INSERT INTO departments SET ?',
-          {
-            name: answer.departmentName,
+        {
+          name: answer.departmentName,
 
-          },
-           (err, res) => {
-            if (err) throw err;
+        },
+        (err, res) => {
+          if (err) throw err;
           console.log(answer.departmentName)
           console.log(err)
-      
-        runSearch();
-      });
 
-      
+          runSearch();
+        });
+
+
     });
 };
 
@@ -100,55 +103,57 @@ const addDepartment = () => {
 
 
 const addRole = () => {
-    const query =
+  const query =
     'SELECT id, name FROM departments';
   connection.query(query, (err, res) => {
-    res.forEach(({ id, name }) => console.log(id + ' ' + name ));
- 
+    res.forEach(({ id, name }) => console.log(id + ' ' + name));
+
     inquirer
-    .prompt([
-      {
-        name: 'roleTitle',
-        type: 'input',
-        message: 'What is the title of the role?',
-      },
-      {
-        name: 'roleSalary',
-        type: 'input',
-        message: 'What is the salary amount for this role?',
-      },
-      {
-        name: 'departmentId',
-        type: 'input',
-        message: 'What is the department ID for this role?',
-        
-      },
-    ])
-    .then((answer) => {
-      const query = connection.query(
-        'INSERT INTO roles SET ?',
-        { title: answer.roleTitle, 
-          salary: answer.roleSalary
+      .prompt([
+        {
+          name: 'roleTitle',
+          type: 'input',
+          message: 'What is the title of the role?',
         },
-        (err, res) => {
-          if (err) throw err;
-        console.log(err)
-    
-       runSearch();
+        {
+          name: 'roleSalary',
+          type: 'input',
+          message: 'What is the salary amount for this role?',
+        },
+        {
+          name: 'departmentId',
+          type: 'input',
+          message: 'What is the department ID for this role?',
+
+        },
+      ])
+      .then((answer) => {
+        const query = connection.query(
+          'INSERT INTO roles SET ?',
+          {
+            title: answer.roleTitle,
+            salary: answer.roleSalary,
+            department_id: answer.departmentId
+          },
+          (err, res) => {
+            if (err) throw err;
+            console.log(err)
+
+            runSearch();
+          });
       });
-    });
   });
   // })
   // .catch(err => {
   //   console.error(err)
   // })
-  
+
 };
 
 
 
 const addEmployee = () => {
-  
+
   inquirer
     .prompt([
       {
@@ -174,17 +179,20 @@ const addEmployee = () => {
     ])
     .then((answer) => {
       connection.query(
-          'INSERT INTO employees SET ?',
-          { first_name: answer.firstName, 
-            last_name: answer.lastName, 
-      
-          },
-          (err, res) => {
-            if (err) throw err;
+        'INSERT INTO employees SET ?',
+        {
+          first_name: answer.firstName,
+          last_name: answer.lastName,
+          role_id: answer.roleId,
+          manager_id: answer.managerID
+
+        },
+        (err, res) => {
+          if (err) throw err;
           console.log(err)
-      
-         runSearch();
-      }); 
+
+          runSearch();
+        });
     });
 };
 
@@ -194,7 +202,7 @@ const viewDepartments = () => {
   const query =
     'SELECT id, name FROM departments';
   connection.query(query, (err, res) => {
-    res.forEach(({ id, name }) => console.log(id + ' ' + name ));
+    res.forEach(({ id, name }) => console.log(id + ' ' + name));
   });
   runSearch();
 };
@@ -203,16 +211,26 @@ const viewRoles = () => {
   const query =
     'SELECT id, title, salary FROM roles';
   connection.query(query, (err, res) => {
-    res.forEach(({ id, title, salary }) => console.log(id + ' ' + title+ ' ' + salary));
+    res.forEach(({ id, title, salary }) => console.table(id + ' ' + title + ' ' + salary));
   });
   runSearch();
 };
 
 const viewEmployees = () => {
+  //need to display id, first, last, title, department, salary, manager
   const query =
-    'SELECT id, first_name, last_name, role_id, manager_id FROM employees';
+    `SELECT e.id, e.first_name, e.last_name, r.title, d.name as department, r.salary FROM employees e 
+  inner JOIN roles r ON e.role_id = r.id
+  inner JOIN departments d ON r.department_id = d.id;`
   connection.query(query, (err, res) => {
-    res.forEach(({ id, first_name, last_name, role_id, manager_id }) => console.log(id + ' ' +first_name+ ' ' +last_name+ ' ' +role_id+ '' +manager_id));
+    let values = [];
+    res.forEach(({ id, first_name, last_name, title, department, salary  }) => values.push([id, first_name, last_name, title, department, salary]));
+    // var values = [
+    //   [1, 'sally', 'huey', 'Sales Manger'],
+    //   [2, 'sally', 'huey', 'Sales Manger']
+    // ]; 
+    console.log('\n \n')
+    console.table(['id', 'first_name', 'last_name', 'title', 'department', 'salary'], values);
   });
   runSearch();
 };
