@@ -14,7 +14,7 @@ After opening up the specfic server.js file in the command line, the user is pre
 * User can select 'view employees" - to see a list of employees along with their corresponding department, employee ID, title, salary, and manager 
 * Add employee - user will be prompted to enter name, role, and manager 
 * View role - user will be able to view all available roles
-* Add role - user will be prompted to enter title, salary, and department 
+* Add role - user is presented with the available roles then is prompted to enter title, salary, and department 
 * Add department - user will be prompted to add name of new department
 * View Departments - user will be able to view all available departments 
 * Update role - user will be prompted to enter which role they want to update
