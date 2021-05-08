@@ -1,4 +1,4 @@
-# employee-tracker
+# Employee Tracker
 
 ## Discription 
 
