@@ -6,7 +6,7 @@ This application allows users to generate and track employees by simply using th
 
 ## Application Video 
 
-[Please click here link to view application demo:]()
+[Please click here link to view application demo:](https://drive.google.com/file/d/1WcEdwdcg5xZmkkJFqbBjuGBO92c6NN2q/view?usp=sharing)
 
 ## Usage 
 
