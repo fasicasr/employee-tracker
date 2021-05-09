@@ -197,6 +197,33 @@ const addEmployee = () => {
     });
 };
 
+const updateRole = () => {
+  inquirer
+    .prompt([
+      {
+        name: 'updateRoleId',
+        type: 'input',
+        message: 'What is the role id for the title you would like to update?',
+      },
+
+      {
+        name: 'updateTitle',
+        type: 'input',
+        message: 'What would you like to update the role to?',
+      }
+    ])
+    .then((answer) => {
+      const query = connection.query(
+        `update roles SET title= ? WHERE id = ?;`,
+        [answer.updateTitle, answer.updateRoleId], (err, res) => {
+          if (err) throw err;
+          runSearch();
+        });
+
+
+    });
+};
+
 
 
 const viewDepartments = () => {
@@ -229,10 +256,10 @@ const viewEmployees = () => {
       inner JOIN roles r ON e.role_id = r.id
       inner JOIN departments d ON r.department_id = d.id
       left JOIN employees m ON e.manager_id = m.id;`
-  //TODO: add manger_id (m.first_name + m.last_name) as manager
+
   connection.query(query, (err, res) => {
     //let values = [];
-    res.forEach(({ id, first_name, last_name, title, department, salary, manager  }) => values.push([id, first_name, last_name, title, department, salary, manager]));
+    res.forEach(({ id, first_name, last_name, title, department, salary, manager }) => values.push([id, first_name, last_name, title, department, salary, manager]));
     // var values = [
     //   [1, 'sally', 'huey', 'Sales Manger'],
     //   [2, 'sally', 'huey', 'Sales Manger']
@@ -243,14 +270,7 @@ const viewEmployees = () => {
   runSearch();
 };
 
-const updateRole = () => {
-  const query =
-    'SELECT name FROM roles';
-  connection.query(query, (err, res) => {
-    res.forEach(({ name }) => console.log(name));
-  });
-  runSearch();
-};
+
 
 
 
