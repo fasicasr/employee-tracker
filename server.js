@@ -2,7 +2,7 @@ const mysql = require('mysql');
 const inquirer = require('inquirer');
 //require('console.table');
 const cTable = require("console.table");
-let values = [];
+
 
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -90,9 +90,7 @@ const addDepartment = () => {
         },
         (err, res) => {
           if (err) throw err;
-          console.log(answer.departmentName)
-          console.log(err)
-
+          
           runSearch();
         });
 
@@ -144,10 +142,7 @@ const addRole = () => {
           });
       });
   });
-  // })
-  // .catch(err => {
-  //   console.error(err)
-  // })
+  
 
 };
 
@@ -190,8 +185,7 @@ const addEmployee = () => {
         },
         (err, res) => {
           if (err) throw err;
-          console.log(err)
-
+        
           runSearch();
         });
     });
@@ -230,22 +224,27 @@ const viewDepartments = () => {
   const query =
     'SELECT id, name FROM departments';
   connection.query(query, (err, res) => {
+    let values = [];
     res.forEach(({ id, name }) => values.push([id, name]));
     console.log('\n \n')
     console.table(['id', 'name'], values);
+    console.log('\n \n')
+    runSearch();
   });
-  runSearch();
 };
 
 const viewRoles = () => {
   const query =
     'SELECT id, title, salary FROM roles';
   connection.query(query, (err, res) => {
+    let values = [];
     res.forEach(({ id, title, salary }) => values.push([id, title, salary]));
     console.log('\n \n')
     console.table(['id', 'title', 'salary'], values);
+    console.log('\n \n')
+    runSearch();
   });
-  runSearch();
+ 
 };
 
 const viewEmployees = () => {
@@ -258,16 +257,17 @@ const viewEmployees = () => {
       left JOIN employees m ON e.manager_id = m.id;`
 
   connection.query(query, (err, res) => {
-    //let values = [];
+    let values = [];
     res.forEach(({ id, first_name, last_name, title, department, salary, manager }) => values.push([id, first_name, last_name, title, department, salary, manager]));
     // var values = [
     //   [1, 'sally', 'huey', 'Sales Manger'],
     //   [2, 'sally', 'huey', 'Sales Manger']
     // ]; 
     console.log('\n \n')
-    console.table(['id', 'first_name', 'last_name', 'title', 'department', 'salary'], values);
+    console.table(['id', 'first_name', 'last_name', 'title', 'department', 'salary', 'manager'], values);
+    runSearch();
   });
-  runSearch();
+
 };
 
 
